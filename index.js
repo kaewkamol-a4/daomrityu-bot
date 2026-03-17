@@ -205,6 +205,9 @@ function handleImageMessage() {
 // ===================================================
 // 🌐 Webhook Endpoint
 // ===================================================
+app.get('/', (req, res) => {
+  res.status(200).send('🌑 Daomrityu Bot is alive');
+});
 app.post('/webhook', (req, res) => {
   res.status(200).send('OK'); // ตอบ LINE server ก่อนเสมอ
 
