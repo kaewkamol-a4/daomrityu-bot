@@ -4,19 +4,13 @@ const app = express();
 
 app.use(express.json());
 
-// ===================================================
-// 🔑 ตั้งค่าตรงนี้ก่อนรัน
-// ===================================================
 const CONFIG = {
-  CHANNEL_ACCESS_TOKEN: 'IHEf4nxyWd4DyykrHPrjXyukregJgMvAZk50PIl4OVKReHB4gSYG+kFLulQ96Dr7rl6KA4S8Xc1jjOnuRQEzjXxmYpB3rx2xGNTNaLcBcyWK7ADP2HJXioZBWnwqmC1ajL/m5vx1VW0L8fp8POi5/gdB04t89/1O/w1cDnyilFU=', // จาก Line Developers Console
-  CHANNEL_SECRET: '1daf43d02a7f95950368d57f8f368be4',             // จาก Line Developers Console
-  SHOP_LINK: 'https://shop.line.me/@969bhktx',       // ลิงก์ MyShop ของคุณ
-  WALLPAPER_DRIVE_LINK: '',    // ลิงก์ Google Drive โฟลเดอร์วอลเปเปอร์
+  CHANNEL_ACCESS_TOKEN: 'IHEf4nxyWd4DyykrHPrjXyukregJgMvAZk50PIl4OVKReHB4gSYG+kFLulQ96Dr7rl6KA4S8Xc1jjOnuRQEzjXxmYpB3rx2xGNTNaLcBcyWK7ADP2HJXioZBWnwqmC1ajL/m5vx1VW0L8fp8POi5/gdB04t89/1O/w1cDnyilFU=',
+  CHANNEL_SECRET: '1daf43d02a7f95950368d57f8f368be4',
+  SHOP_LINK: 'https://shop.line.me/@969bhktx',
+  WALLPAPER_DRIVE_LINK: '',
 };
 
-// ===================================================
-// 🔮 คำทำนาย 12 ราศี (แก้ไขได้ตามต้องการ)
-// ===================================================
 const HOROSCOPE = {
   'ราศีเมษ': `🔴 ราศีเมษ (21 มี.ค. – 19 เม.ย.)
 ดาวมฤตยูเห็นแล้ว... พลังงานสัปดาห์นี้แรงผิดปกติ
@@ -115,9 +109,6 @@ const HOROSCOPE = {
 🖤 เสริมพลังด้วยวอลเปเปอร์ดาวมฤตยู → พิมพ์ "วอลเปเปอร์"`,
 };
 
-// ===================================================
-// 📨 ฟังก์ชันส่งข้อความกลับ
-// ===================================================
 async function replyMessage(replyToken, messages) {
   try {
     await axios.post(
@@ -138,9 +129,6 @@ async function replyMessage(replyToken, messages) {
   }
 }
 
-// ===================================================
-// 🧠 Logic หลัก — ประมวลผลข้อความจากลูกค้า
-// ===================================================
 function handleTextMessage(text) {
   const msg = text.trim().toLowerCase();
 
@@ -157,6 +145,14 @@ function handleTextMessage(text) {
     return [{
       type: 'text',
       text: `🖤 วอลเปเปอร์ดาวมฤตยู — Dark Mystic Collection\n\n✨ ออกแบบเฉพาะสำหรับคนสายดาร์ก\n🌑 ราคาเริ่มต้น 59 บาท/ชิ้น\n📦 ส่งไฟล์ HD ทันทีหลังโอน\n\n👉 ดูสินค้าทั้งหมดได้ที่:\n${CONFIG.SHOP_LINK}\n\nหรือพิมพ์ "สั่ง" เพื่อสั่งซื้อได้เลย 🔮`,
+    }];
+  }
+
+  // ── ดูดวงส่วนตัว ──
+  if (msg.includes('ดูดวงส่วนตัว') || msg.includes('ดวงส่วนตัว') || msg.includes('ดวงเฉพาะ')) {
+    return [{
+      type: 'text',
+      text: `🔮 ดาวมฤตยู — ดูดวงเฉพาะบุคคล\n\n💳 ราคา 199 บาท/ฉบับ\nรับรายงานดวงชะตา PDF ละเอียด\n\nส่งข้อมูลมาได้เลย:\n1️⃣ ชื่อ-นามสกุล\n2️⃣ วัน/เดือน/ปีเกิด\n3️⃣ เรื่องที่อยากรู้ (การงาน/การเงิน/ความรัก/ภาพรวม)\n\nจากนั้นโอน 199 บาท PromptPay: 0970486576\nส่งสลิป → รับ PDF ภายใน 24 ชั่วโมง 🌑`,
     }];
   }
 
@@ -180,36 +176,30 @@ function handleTextMessage(text) {
   if (msg.includes('สั่ง') || msg.includes('ซื้อ') || msg.includes('order')) {
     return [{
       type: 'text',
-      text: `💳 วิธีสั่งซื้อวอลเปเปอร์ดาวมฤตยู\n\n1️⃣ แจ้งแบบที่ต้องการ (ราศี/ธีม)\n2️⃣ โอนเงินมาที่ PromptPay: [ใส่เบอร์คุณ]\n3️⃣ ส่ง Screenshot สลิปมาในแชทนี้\n4️⃣ รับไฟล์ HD ทันที ไม่เกิน 30 นาที ⚡\n\nราคา:\n🖤 1 ชิ้น = 59 บาท\n🖤🖤 3 ชิ้น = 149 บาท (ประหยัด 28 บาท)\n🖤🖤🖤 5 ชิ้น = 229 บาท (ประหยัด 66 บาท)`,
+      text: `💳 วิธีสั่งซื้อวอลเปเปอร์ดาวมฤตยู\n\n1️⃣ แจ้งแบบที่ต้องการ (ราศี/ธีม)\n2️⃣ โอนเงินมาที่ PromptPay: 0970486576\n3️⃣ ส่ง Screenshot สลิปมาในแชทนี้\n4️⃣ รับไฟล์ HD ทันที ไม่เกิน 30 นาที ⚡\n\nราคา:\n🖤 1 ชิ้น = 59 บาท\n🖤🖤 3 ชิ้น = 149 บาท (ประหยัด 28 บาท)\n🖤🖤🖤 5 ชิ้น = 229 บาท (ประหยัด 66 บาท)`,
     }];
   }
 
   // ── Default ──
   return [{
     type: 'text',
-    text: `🌑 ดาวมฤตยูได้ยินแล้ว...\n\nพิมพ์คำเหล่านี้เพื่อรับคำตอบทันที:\n\n🔮 "ดวง" → เช็คดวงตามราศี\n🖤 "วอลเปเปอร์" → ดูสินค้าทั้งหมด\n💳 "สั่ง" → สั่งซื้อ\n🎁 "ฟรี" → รับวอลเปเปอร์ฟรี`,
+    text: `🌑 ดาวมฤตยูได้ยินแล้ว...\n\nพิมพ์คำเหล่านี้เพื่อรับคำตอบทันที:\n\n🔮 "ดวง" → เช็คดวงตามราศี\n📋 "ดวงส่วนตัว" → ดูดวงเฉพาะบุคคล PDF 199 บาท\n🖤 "วอลเปเปอร์" → ดูสินค้าทั้งหมด\n💳 "สั่ง" → สั่งซื้อ\n🎁 "ฟรี" → รับวอลเปเปอร์ฟรี`,
   }];
 }
 
-// ===================================================
-// 📸 จัดการรูปภาพ (สลิปโอนเงิน)
-// ===================================================
 function handleImageMessage() {
   return [{
     type: 'text',
-    text: `📩 ดาวมฤตยูได้รับสลิปแล้ว 🌑\n\nกำลังตรวจสอบรายการ...\n\n✅ ยืนยันการชำระเงินแล้ว!\nจะส่งไฟล์วอลเปเปอร์ให้ภายใน 30 นาที ⚡\n\nหากเกิน 30 นาทีแล้วยังไม่ได้รับ\nพิมพ์ "ติดตาม" มาได้เลยครับ 🙏`,
+    text: `📩 ดาวมฤตยูได้รับสลิปแล้ว 🌑\n\nกำลังตรวจสอบรายการ...\n\n✅ ยืนยันการชำระเงินแล้ว!\nจะส่งไฟล์ให้ภายใน 30 นาที ⚡\n\nหากเกิน 30 นาทีแล้วยังไม่ได้รับ\nพิมพ์ "ติดตาม" มาได้เลยครับ 🙏`,
   }];
-  // 💡 NOTE: เพิ่มระบบตรวจสลิปจริงในอนาคตด้วย SCB API หรือ KBank API
 }
 
-// ===================================================
-// 🌐 Webhook Endpoint
-// ===================================================
 app.get('/', (req, res) => {
   res.status(200).send('🌑 Daomrityu Bot is alive');
 });
+
 app.post('/webhook', (req, res) => {
-  res.status(200).send('OK'); // ตอบ LINE server ก่อนเสมอ
+  res.status(200).send('OK');
 
   const events = req.body.events || [];
 
@@ -218,7 +208,6 @@ app.post('/webhook', (req, res) => {
 
     if (event.type === 'message') {
       let responses;
-
       if (event.message.type === 'text') {
         responses = handleTextMessage(event.message.text);
       } else if (event.message.type === 'image') {
@@ -226,23 +215,18 @@ app.post('/webhook', (req, res) => {
       } else {
         responses = handleTextMessage('');
       }
-
       await replyMessage(replyToken, responses);
     }
 
-    // ── Welcome Message เมื่อมีคนแอด ──
     if (event.type === 'follow') {
       await replyMessage(replyToken, [{
         type: 'text',
-        text: `🌑 ยินดีต้อนรับสู่ ดาวมฤตยู\n\nที่นี่ไม่ได้บอกแค่ดวงดี...\nแต่บอกความจริงที่ดาวเห็น 🔮\n\nสิ่งที่คุณจะได้รับ:\n⭐ ดูดวงรายสัปดาห์ตามราศี\n🖤 วอลเปเปอร์มงคลสไตล์ Dark Mystic\n🌙 สีมงคลประจำวัน\n\nพิมพ์ "ดวง" เพื่อเริ่มต้นได้เลย 🌑`,
+        text: `🌑 ยินดีต้อนรับสู่ ดาวมฤตยู\n\nที่นี่ไม่ได้บอกแค่ดวงดี...\nแต่บอกความจริงที่ดาวเห็น 🔮\n\nบริการของเรา:\n⭐ ดูดวงรายสัปดาห์ตามราศี → พิมพ์ "ดวง"\n📋 ดูดวงเฉพาะบุคคล PDF → พิมพ์ "ดวงส่วนตัว"\n🖤 วอลเปเปอร์มงคล Dark Mystic → พิมพ์ "วอลเปเปอร์"\n🎁 รับวอลเปเปอร์ฟรี → พิมพ์ "ฟรี"\n\nดาวมฤตยูพร้อมบอกความจริงแล้ว 🌑`,
       }]);
     }
   });
 });
 
-// ===================================================
-// 🚀 Start Server
-// ===================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🌑 ดาวมฤตยู Bot รันอยู่ที่ port ${PORT}`);
