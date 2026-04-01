@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const CONFIG = {
-  CHANNEL_ACCESS_TOKEN: 'IHEf4nxyWd4DyykrHPrjXyukregJgMvAZk50PIl4OVKReHB4gSYG+kFLulQ96Dr7rl6KA4S8Xc1jjOnuRQEzjXxmYpB3rx2xGNTNaLcBcyWK7ADP2HJXioZBWnwqmC1ajL/m5vx1VW0L8fp8POi5/gdB04t89/1O/w1cDnyilFU=',
+  CHANNEL_ACCESS_TOKEN: '8PKXOjypD/oRS+/f10ACau7b73cMdsiTnwLvJb9wcBhGVxCbaET2QQ76wPHwOe6srl6KA4S8Xc1jjOnuRQEzjXxmYpB3rx2xGNTNaLcBcyWK7ADP2HJXioZBWnwqmC1ajL/m5vx1VW0L8fp8POi5/gdB04t89/1O/w1cDnyilFU=',
   CHANNEL_SECRET: '1daf43d02a7f95950368d57f8f368be4',
   SHOP_LINK: 'https://shop.line.me/@969bhktx',
 };
