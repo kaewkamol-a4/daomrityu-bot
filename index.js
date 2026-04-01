@@ -8,9 +8,32 @@ const CONFIG = {
   CHANNEL_ACCESS_TOKEN: 'IHEf4nxyWd4DyykrHPrjXyukregJgMvAZk50PIl4OVKReHB4gSYG+kFLulQ96Dr7rl6KA4S8Xc1jjOnuRQEzjXxmYpB3rx2xGNTNaLcBcyWK7ADP2HJXioZBWnwqmC1ajL/m5vx1VW0L8fp8POi5/gdB04t89/1O/w1cDnyilFU=',
   CHANNEL_SECRET: '1daf43d02a7f95950368d57f8f368be4',
   SHOP_LINK: 'https://shop.line.me/@969bhktx',
-  WALLPAPER_DRIVE_LINK: '',
 };
 
+// ===================================================
+// 🖼️ Link วอลเปเปอร์แต่ละราศี (Direct Download)
+// ===================================================
+const WALLPAPERS = {
+  'ราศีเมษ': 'https://drive.google.com/uc?export=download&id=1KHv0RoeHFFrlDGlOYyAr88EJoPK8yr5_',
+  'ราศีพฤษภ': 'https://drive.google.com/uc?export=download&id=1uWLg60hQ1HxR8F8Rv-0bVfCWm5IUrMOZ',
+  'ราศีเมถุน': 'https://drive.google.com/uc?export=download&id=1nnnHv4wAEL7xpqruWBO4kdmizi6NFBoL',
+  'ราศีกรกฎ': 'https://drive.google.com/uc?export=download&id=1499gTF1HtkQK3YuACJA1vYgp1KGiSkNB',
+  'ราศีสิงห์': 'https://drive.google.com/uc?export=download&id=1IK0Okh1YqKAV_yvha6qu5G9Fu-KhmpaV',
+  'ราศีกันย์': 'https://drive.google.com/uc?export=download&id=13uYSLLN_NEpSY1Yf70cPqrW3Z9JvPO9S',
+  'ราศีตุลย์': 'https://drive.google.com/uc?export=download&id=1wyqzEJwu6gKvKmvjw7nBSjA6BZ81k_FT',
+  'ราศีพิจิก': 'https://drive.google.com/uc?export=download&id=19r0g91YeJ-kZLHOjKZ2MrP-AS9TF1i0y',
+  'ราศีธนู': 'https://drive.google.com/uc?export=download&id=1ui2nACedxy7Gdx3TlZmDgWl_E1QpQRP6',
+  'ราศีมังกร': 'https://drive.google.com/uc?export=download&id=1id7ROjZL9Y2AAoRZFkESK37y-zy3ZUwq',
+  'ราศีกุมภ์': 'https://drive.google.com/uc?export=download&id=1CdPGa0R42rNhP70onRbyT1qbk7mFBCz_',
+  'ราศีมีน': 'https://drive.google.com/uc?export=download&id=1AKGcUBP2t21pq6iXdPn8LX_uKTm5J4Ue',
+};
+
+// เก็บ State ว่าใครส่งสลิปมาแล้วรอเลือกราศี
+const pendingWallpaper = {};
+
+// ===================================================
+// 🔮 คำทำนาย 12 ราศี
+// ===================================================
 const HOROSCOPE = {
   'ราศีเมษ': `🔴 ราศีเมษ (21 มี.ค. – 19 เม.ย.)
 ดาวมฤตยูเห็นแล้ว... พลังงานสัปดาห์นี้แรงผิดปกติ
@@ -109,6 +132,9 @@ const HOROSCOPE = {
 🖤 เสริมพลังด้วยวอลเปเปอร์ดาวมฤตยู → พิมพ์ "วอลเปเปอร์"`,
 };
 
+// ===================================================
+// 📨 ฟังก์ชันส่งข้อความกลับ
+// ===================================================
 async function replyMessage(replyToken, messages) {
   try {
     await axios.post(
@@ -129,8 +155,30 @@ async function replyMessage(replyToken, messages) {
   }
 }
 
-function handleTextMessage(text) {
+// ===================================================
+// 🧠 Logic หลัก
+// ===================================================
+function handleTextMessage(text, userId) {
   const msg = text.trim().toLowerCase();
+
+  // ── ตรวจว่ากำลังรอเลือกราศีหลังส่งสลิปไหม ──
+  if (pendingWallpaper[userId]) {
+    const zodiacKeys = Object.keys(WALLPAPERS);
+    for (const zodiac of zodiacKeys) {
+      if (text.includes(zodiac) || text.includes(zodiac.replace('ราศี', ''))) {
+        delete pendingWallpaper[userId];
+        const link = WALLPAPERS[zodiac];
+        return [{
+          type: 'text',
+          text: `✅ ยืนยันการชำระเงินแล้วค่ะ 🌑\n\n🖤 วอลเปเปอร์${zodiac} ของคุณอยู่ที่นี่เลยค่ะ:\n${link}\n\nกด Download ได้เลยนะคะ 🔮\nขอบคุณที่ไว้วางใจดาวมฤตยูค่ะ ✨`,
+        }];
+      }
+    }
+    return [{
+      type: 'text',
+      text: `🔮 พิมพ์ชื่อราศีที่ต้องการได้เลยนะคะ\nเช่น ราศีเมษ, ราศีพิจิก, ราศีมีน...`,
+    }];
+  }
 
   // ── ตรวจสอบราศี ──
   const zodiacKeys = Object.keys(HOROSCOPE);
@@ -176,7 +224,7 @@ function handleTextMessage(text) {
   if (msg.includes('สั่ง') || msg.includes('ซื้อ') || msg.includes('order')) {
     return [{
       type: 'text',
-      text: `💳 วิธีสั่งซื้อวอลเปเปอร์ดาวมฤตยู\n\n1️⃣ แจ้งแบบที่ต้องการ (ราศี/ธีม)\n2️⃣ โอนเงินมาที่ PromptPay: 0970486576\n3️⃣ ส่ง Screenshot สลิปมาในแชทนี้\n4️⃣ รับไฟล์ HD ทันที ไม่เกิน 30 นาที ⚡\n\nราคา:\n🖤 1 ชิ้น = 59 บาท\n🖤🖤 3 ชิ้น = 149 บาท (ประหยัด 28 บาท)\n🖤🖤🖤 5 ชิ้น = 229 บาท (ประหยัด 66 บาท)`,
+      text: `💳 วิธีสั่งซื้อวอลเปเปอร์ดาวมฤตยู\n\n1️⃣ แจ้งแบบที่ต้องการ (ราศี/ธีม)\n2️⃣ โอนเงินมาที่ PromptPay: 0970486576\n3️⃣ ส่ง Screenshot สลิปมาในแชทนี้\n4️⃣ รับไฟล์ HD ทันที ไม่เกิน 30 นาที ⚡\n\nราคา:\n🖤 1 ชิ้น = 59 บาท\n🖤🖤 3 ชิ้น = 149 บาท\n🖤🖤🖤 5 ชิ้น = 229 บาท`,
     }];
   }
 
@@ -187,13 +235,20 @@ function handleTextMessage(text) {
   }];
 }
 
-function handleImageMessage() {
+// ===================================================
+// 📸 จัดการรูปภาพ (สลิปโอนเงิน)
+// ===================================================
+function handleImageMessage(userId) {
+  pendingWallpaper[userId] = true;
   return [{
     type: 'text',
-    text: `📩 ดาวมฤตยูได้รับสลิปแล้ว 🌑\n\nกำลังตรวจสอบรายการ...\n\n✅ ยืนยันการชำระเงินแล้ว!\nจะส่งไฟล์ให้ภายใน 30 นาที ⚡\n\nหากเกิน 30 นาทีแล้วยังไม่ได้รับ\nพิมพ์ "ติดตาม" มาได้เลยครับ 🙏`,
+    text: `📩 ได้รับสลิปแล้วค่ะ ✅\n\nต้องการวอลเปเปอร์ราศีไหนคะ?\nพิมพ์ชื่อราศีมาได้เลยเลย 🌑\n\n♈ เมษ  ♉ พฤษภ  ♊ เมถุน  ♋ กรกฎ\n♌ สิงห์  ♍ กันย์  ♎ ตุลย์  ♏ พิจิก\n♐ ธนู  ♑ มังกร  ♒ กุมภ์  ♓ มีน`,
   }];
 }
 
+// ===================================================
+// 🌐 Webhook
+// ===================================================
 app.get('/', (req, res) => {
   res.status(200).send('🌑 Daomrityu Bot is alive');
 });
@@ -205,15 +260,16 @@ app.post('/webhook', (req, res) => {
 
   events.forEach(async (event) => {
     const replyToken = event.replyToken;
+    const userId = event.source?.userId;
 
     if (event.type === 'message') {
       let responses;
       if (event.message.type === 'text') {
-        responses = handleTextMessage(event.message.text);
+        responses = handleTextMessage(event.message.text, userId);
       } else if (event.message.type === 'image') {
-        responses = handleImageMessage();
+        responses = handleImageMessage(userId);
       } else {
-        responses = handleTextMessage('');
+        responses = handleTextMessage('', userId);
       }
       await replyMessage(replyToken, responses);
     }
